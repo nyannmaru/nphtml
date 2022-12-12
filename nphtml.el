@@ -163,7 +163,7 @@
 ;;   (error (message "say yes") (insert "error happened"))
 ;;   (insert "after-insertion"))
 
-
+;;;###autoload
 (defun nphtml-insert-html nil
   (interactive)
   (nphtml--insert-init-timer);this forces emacs call insert-when-good sparsely
