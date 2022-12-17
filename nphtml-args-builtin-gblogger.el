@@ -22,7 +22,7 @@
 
 			;;templates
 			(:type blocky :tag BlogItemTitle :nest (BlogItemUrl) :alias gbItemtitle)
-			(:type inline :tag BlogItemUrl   :nest (:tag a :attrs(href <$BlogItemUrl$>)) :hidden t)
+			(:type inline :tag BlogItemUrl   :nest ((:tag a :attrs(href <$BlogItemUrl$>))) :hidden t)
 			(:type blocky :tag BloggerPreviousItems :alias gbPrevs
 						 :nest ((:tag li
 												 :nest
