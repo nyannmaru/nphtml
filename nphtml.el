@@ -55,17 +55,45 @@
     (npring-enqueue nphtml--overlay-committed-string-history committed)
     (setf nphtml--overlay-committed-string committed)))
 
-;;FIXME(´・ω・｀)should add xahlee's address as a ref
-(defun nphtml--overlay-completion-at-point nil;; for C-M-i
-  (interactive))
+
+;FIXME(´・ω・｀)should make more earnestly
+(defun nphtml--overlay-completion-at-point nil ;; for C-M-i
+	(interactive)
+	(unless nphtml--completion-list (nphtml--init-hash))
+	(let* ((sym (symbol-at-point))
+				 (str (if (null sym) "" (symbol-name sym)))
+				 (tried (or (try-completion str nphtml--completion-list)
+										"")))
+		(if (eq (length str) (length tried));;if completion doesn't work message them
+				(let* ((filtered (seq-filter (lambda (lstr) (string-prefix-p str lstr t)) nphtml--completion-list))
+							 (mapped   (seq-map    (lambda (lstr) (concat "-" (propertize 
+																																 (substring lstr (length str))
+																																 'face '(:foreground "green"))))
+																		 filtered)))
+					(message (string-join mapped "\s")))
+			(unless (string-empty-p tried)
+				(delete-char (- (length str)))
+				(insert tried (if (member tried nphtml--completion-list) " " ""))))))
+
+
 (defun nphtml--overlay-kill-overlay nil;;for C-g to cancel
-  (interactive));FIXME(´・ω・｀)
+  (interactive)
+	(nphtml--overlay-force-hibernate t));FIXME(´・ω・｀)
 
 (defvar nphtml--overlay-localmap (let ((map (make-sparse-keymap)));FIXME(´・ω・｀)
 				   (define-key map (kbd "C-m") 'nphtml--overlay-commit)
 				   (define-key map (kbd "C-g") 'nphtml--overlay-kill-overlay)
 				   (define-key map (kbd "C-M-i") 'nphtml--overlay-completion-at-point)
+					 (define-key map (kbd "TAB") 'nphtml--overlay-completion-at-point)
+					 (define-key map (kbd "C-a") 'nphtml--overlay-move-beginning-of-line)
+					 (define-key map (kbd "C-e") 'nphtml--overlay-move-end-of-line)
 				     map))
+(defun nphtml--overlay-move-beginning-of-line nil
+	(interactive)
+	(goto-char (overlay-start (nphtml--overlay-get))))
+(defun nphtml--overlay-move-end-of-line nil
+	(interactive)
+	(goto-char (- (overlay-end (nphtml--overlay-get)) 2)))
 
 (defun nphtml--overlay-init nil
   (let ((spt (point)) (ept (point-at-eol)))
@@ -106,8 +134,9 @@
 (defun nphtml--overlay-observer nil
   (interactive)
   (cond ((nphtml--overlay-should-be-continuedp);point inside the overlay and on the same buffer
-	 (message "%s" nphtml--overlay-message-str));jus shows string and wait for commit of the string
-	(t (nphtml--overlay-force-hibernate t))));leads to self-firing
+				 (unless (current-message)
+					 (message "%s" nphtml--overlay-message-str)));jus shows string and wait for commit of the string
+				(t (nphtml--overlay-force-hibernate t))));leads to self-firing
 
 
 
