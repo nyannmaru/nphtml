@@ -5,10 +5,10 @@
 ;;     [  *  :repeat ]
 ;;     should add [ .  :attrs (class ...)] [#]
 (defconst nphtml--analyse-committed-special-char-prefixes
-  (list ?~ ?- ?\ ?@ ?% ?+  ?* ?. ?#))
+	(list ?~ ?@ ?! ?+ ?* ?. ?#))
 ;;is a super-set of nphtml--analyse-command-chars
 (defconst nphtml--analyse-command-chars
-  (list ?~  ?- ?+ ?* ?% ?. ?#))
+  (list ?~ ?@ ?! ?+ ?* ?. ?#))
 (defcustom nphtml-analyse-attr-separator ?,
   "seperator when you feeding the nphtml interactive arg this need to be a outsider of `nphtml--analyse-command-chars'"
   :type 'character)
@@ -81,14 +81,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun nphtml--analyse-str-plistnize (string)
   (let ((val (nphtml--analyse-remove-prefix string))
-	(ch (seq-first string)))
-    (cond ((eq ch ?~) `(:attrs ,(split-string val "," nil "\s*")))
-	  ((eq ch ?.) `(:attrs ,(list "class" (string-trim val))))
-	  ((eq ch ?#) `(:attrs ,(list "id" (string-trim val))))
-	  ((eq ch ?%) `(:para  ,val))
-	  ((eq ch ?-) `(:prepend ,(split-string val "," nil "\s*")))
-	  ((eq ch ?+) `(:append  ,(split-string val "," nil "\s*")))
-	  ((eq ch ?*) `(:repeat ,(string-to-number val))))))
+	(ch (seq-first string)));?~ ?@ ?! ?+ ?* ?. ?#
+    (cond
+		 ((eq ch ?~) `(:attrs ,(split-string val "," nil "\s*")))
+	   ((eq ch ?.) `(:attrs ,(list "class" (string-trim val))))
+	   ((eq ch ?#) `(:attrs ,(list "id" (string-trim val))))
+	   ((eq ch ?@) `(:para  ,val))
+	   ((eq ch ?!) `(:prepend ,(split-string val "," nil "\s*")))
+	   ((eq ch ?+) `(:append  ,(split-string val "," nil "\s*")))
+	   ((eq ch ?*) `(:repeat ,(string-to-number val))))))
 (defvar nphtml--analyse-sub-parts nil)
 (defun nphtml--analyse-get-sub-parts nil
   (when nphtml--analyse-main-parts
