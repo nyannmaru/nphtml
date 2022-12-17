@@ -5,13 +5,14 @@
   :type 'boolean)
 
 (defconst nphtml--builtin-gblogger-args
-	(let ((archUrls "<$BlogArchiveURL$>") (archNames "<$BlogArchiveName$>"))
+	(let ((archUrls "<$BlogArchiveURL$>") (archNames "<$BlogArchiveName$>")
+				(prevTitle "<$BlogPreviousItemTitle$>") (prevLink "<$BlogItemPermalinkURL$>"))
 		;;crucially important tags
 		`((:type blocky :tag Blogger  :alias gbBlogger)
 			
 			(:type blocky :tag BloggerArchives :alias gbArchives
-						 :nest ((:tag li :type inline :nest ((:tag a :attrs (href ,archUrls) :para ,archNames
-																											 :type inline)))))
+						 :nest ((:tag li :type inline
+										:nest ((:tag a :attrs (href ,archUrls) :para ,archNames :type inline)))))
 
 			;;condition case like tags
 			(:type blocky :tag ItemPage :alias gbCondItempage)
@@ -22,11 +23,10 @@
 
 			;;templates
 			(:type blocky :tag BlogItemTitle :nest (BlogItemUrl) :alias gbItemtitle)
-			(:type inline :tag BlogItemUrl   :nest ((:tag a :attrs(href <$BlogItemUrl$>))) :hidden t)
+			(:type inline :tag BlogItemUrl   :nest ((:tag a :attrs (href <$BlogItemUrl$>))) :hidden t)
 			(:type blocky :tag BloggerPreviousItems :alias gbPrevs
-						 :nest ((:tag li
-												 :nest
-												 ((:tag a :attrs (href <$BlogItemPermalinkURL$>) :para <$BlogPreviousItemTitle$>)))))
+						 :nest ((:tag li :type inline
+									:nest ((:tag a :attrs (href ,prevLink) :para ,prevTitle :type inline)))))
 			(:type inline :tag title :alias gbBlogPageTitle :para <$BlogPageTitle$> :hidden t)
 			(:type void   :tag $BlogMetaData$                           :hidden t)
 			
