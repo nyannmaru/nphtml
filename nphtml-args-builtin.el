@@ -37,6 +37,7 @@
     
     (:tag meter)
     (:tag nav  :type blocky)
+		(:tag ol   :type blocky)
     (:tag nobr)
     (:tag noframes)
     (:tag noscript)
@@ -95,6 +96,11 @@
   (nphtml--push-hash nphtml--builtin-html-args)
   (when nphtml-add-gblogger
     (nphtml--push-hash nphtml--builtin-gblogger-args)))
+(defun nphtml-reinit-hash nil
+	(interactive)
+	(setf nphtml--str-arg-hash nil
+				nphtml--completion-list nil)
+	(nphtml--init-hash))
 (defcustom nphtml-immediate-error nil
   "determines behaviour when you try to gethash with unregisted key"
   :type 'boolean)
