@@ -31,11 +31,11 @@
   (make-npring 1
     (lambda (val) (and (consp val))) nil
     (lambda (val) (let ((ol (make-overlay (car val) (cdr val))))
-		    (overlay-put ol 'local-map nphtml--overlay-localmap)
-		    (overlay-put ol 'face 'highlight);FIXME(´・ω・｀)
-		    (overlay-put ol 'before-string nphtml--overlay-bstring)
-		    (overlay-put ol 'after-string  nphtml--overlay-astring)
-		    ol))
+										(overlay-put ol 'local-map nphtml--overlay-localmap)
+										(overlay-put ol 'face 'highlight);FIXME(´・ω・｀)
+										(overlay-put ol 'before-string nphtml--overlay-bstring)
+										(overlay-put ol 'after-string  nphtml--overlay-astring)
+										ol))
     (lambda (ol val) (move-overlay ol (car val) (cdr val) (current-buffer)))))
 
 
@@ -47,33 +47,39 @@
   (interactive)
   (when (nphtml--overlay-hibernatedp) (error "currently nphtml-overlay is hibernating"))
   (let* ((ol (nphtml--overlay-get)) (spt (overlay-start ol)) (ept (overlay-end ol))
-	 (committed (buffer-substring-no-properties  spt ept)))
+				 (committed (buffer-substring-no-properties  spt ept)))
     (nphtml--overlay-force-hibernate) ;but without cancelling timer
     (when (null nphtml--overlay-committed-string-history)
       (setf nphtml--overlay-committed-string-history
-	    (make-npring 10 #'stringp)))
+						(make-npring 10 #'stringp)))
     (npring-enqueue nphtml--overlay-committed-string-history committed)
     (setf nphtml--overlay-committed-string committed)))
 
 
-;FIXME(´・ω・｀)should make more earnestly
+;;FIXME(´・ω・｀)should make more earnestly
 (defun nphtml--overlay-completion-at-point nil ;; for C-M-i
 	(interactive)
+	(while (not (eq (char-after) ?\s)) (forward-char));move to the last point of the word
 	(unless nphtml--completion-list (nphtml--init-hash))
 	(let* ((sym (symbol-at-point))
 				 (str (if (null sym) "" (symbol-name sym)))
-				 (tried (or (try-completion str nphtml--completion-list)
-										"")))
-		(if (eq (length str) (length tried));;if completion doesn't work message them
-				(let* ((filtered (seq-filter (lambda (lstr) (string-prefix-p str lstr t)) nphtml--completion-list))
-							 (mapped   (seq-map    (lambda (lstr) (concat "-" (propertize 
-																																 (substring lstr (length str))
-																																 'face '(:foreground "green"))))
-																		 filtered)))
-					(message (string-join mapped "\s")))
-			(unless (string-empty-p tried)
-				(delete-char (- (length str)))
-				(insert tried (if (member tried nphtml--completion-list) " " ""))))))
+				 (tried (try-completion str nphtml--completion-list)))
+		(cond ((null tried) (message (format "No candidate for '%s' found" str)))
+					((stringp tried)
+					 (if (eq (length str) (length tried));;if completion doesn't work message them
+							 (let* ((trail (propertize "=>" 'face '(:foreground "red")))
+											(filtered (seq-filter (lambda (lstr) (string-prefix-p str lstr t)) nphtml--completion-list))
+											(mapped   (seq-map    (lambda (lstr) (concat trail (propertize 
+																																					(substring lstr (length str))
+																																					'face '(:foreground "green"))))
+																						filtered)))
+								 (message (if mapped (string-join mapped "\s"))))
+						 (unless (string-empty-p tried)
+							 (delete-char (- (length str)))
+							 (insert tried (if (member tried nphtml--completion-list) " " "")))))
+					(t (insert "\s")))))
+
+
 
 
 (defun nphtml--overlay-kill-overlay nil;;for C-g to cancel
@@ -81,13 +87,13 @@
 	(nphtml--overlay-force-hibernate t));FIXME(´・ω・｀)
 
 (defvar nphtml--overlay-localmap (let ((map (make-sparse-keymap)));FIXME(´・ω・｀)
-				   (define-key map (kbd "C-m") 'nphtml--overlay-commit)
-				   (define-key map (kbd "C-g") 'nphtml--overlay-kill-overlay)
-				   (define-key map (kbd "C-M-i") 'nphtml--overlay-completion-at-point)
-					 (define-key map (kbd "TAB") 'nphtml--overlay-completion-at-point)
-					 (define-key map (kbd "C-a") 'nphtml--overlay-move-beginning-of-line)
-					 (define-key map (kbd "C-e") 'nphtml--overlay-move-end-of-line)
-				     map))
+																	 (define-key map (kbd "C-m") 'nphtml--overlay-commit)
+																	 (define-key map (kbd "C-g") 'nphtml--overlay-kill-overlay)
+																	 (define-key map (kbd "C-M-i") 'nphtml--overlay-completion-at-point)
+																	 (define-key map (kbd "TAB") 'nphtml--overlay-completion-at-point)
+																	 (define-key map (kbd "C-a") 'nphtml--overlay-move-beginning-of-line)
+																	 (define-key map (kbd "C-e") 'nphtml--overlay-move-end-of-line)
+																	 map))
 (defun nphtml--overlay-move-beginning-of-line nil
 	(interactive)
 	(goto-char (overlay-start (nphtml--overlay-get))))
@@ -99,7 +105,7 @@
   (let ((spt (point)) (ept (point-at-eol)))
     (when (eq spt ept) (save-excursion (insert "  ")))
     (npring-enqueue nphtml--overlay-container (cons (point) (point-at-eol))))
-    ;;this let seg builds an overlay in where you can commit a string
+  ;;this let seg builds an overlay in where you can commit a string
   (add-hook 'post-command-hook 'nphtml--overlay-observer);this may be dangerous...(´・ω・｀)
   )
 ;;combination of overlay and its observer makes up the utility i want
@@ -113,9 +119,20 @@
 (defun nphtml--overlay-should-be-continuedp nil
   (let ((ol (nphtml--overlay-get)))
     (and (<= (overlay-start ol) (point) (overlay-end ol))
-	 (eq (overlay-buffer ol) (current-buffer)))))
-(defconst nphtml--overlay-message-str ;FIXME(´・ω・｀)should propertize and edit contents
-  "'-' : attrs '@' : para appending *N for repeat N times")
+				 (eq (overlay-buffer ol) (current-buffer)))))
+
+
+(defvar nphtml--overlay-message-str ;FIXME(´・ω・｀)should make face
+	(let  ((tilda  (propertize "~" 'face '(:foreground "red")))
+				 (dot    (propertize "." 'face '(:foreground "red")))
+				 (sharp  (propertize "#" 'face '(:foreground "red")))
+				 (atmark (propertize "@" 'face '(:foreground "red")))
+				 (excram (propertize "!" 'face '(:foreground "red")))
+				 (plus   (propertize "+" 'face '(:foreground "red")))
+				 (times  (propertize "*" 'face '(:foreground "red"))))
+		(concat  sharp " -> id " dot " -> class " tilda " -> attrs" "\n"
+						 excram " -> prepends tags " plus " -> appends tags " times " -> repeats a tag" "\n"
+						 atmark " -> is for insert paragraph")))
 
 (defun nphtml--overlay-force-hibernate (&optional cancelling-timer)
   "***this moves the overlay to nil***
@@ -124,7 +141,7 @@
 ***(&optional)kills the timer of the fucntion-timer***."
   (interactive)
   (let* ((ol (nphtml--overlay-get))
-	 (spt (overlay-start ol)) (ept (overlay-end ol)))
+				 (spt (overlay-start ol)) (ept (overlay-end ol)))
     (when (eq (overlay-buffer ol) (current-buffer)) (delete-region spt ept))
     (delete-overlay ol));;move to nil point not deletion 
   (remove-hook 'post-command-hook #'nphtml--overlay-observer)
@@ -155,13 +172,13 @@
 (defun nphtml--insert-init-timer nil
   (if (null nphtml--insert-timer)
       (setf nphtml--insert-timer
-	    (run-with-timer 1.0 0.45  #'nphtml--insert-insert-string-when-good))
+						(run-with-timer 1.0 0.45  #'nphtml--insert-insert-string-when-good))
     (timer-activate nphtml--insert-timer)))
 (defun nphtml--insert-revert-vars nil
   (cancel-timer nphtml--insert-timer)
   (setf nphtml--overlay-committed-string nil
-	nphtml--analyse-main-parts nil
-	nphtml--analyse-sub-parts  nil)
+				nphtml--analyse-main-parts nil
+				nphtml--analyse-sub-parts  nil)
   (remove-hook 'post-command-hook #'nphtml--overlay-observer))
 (defcustom nphtml-insert-should-be-chatty nil
   "var for testing purpose in most cases should be nil"
@@ -169,18 +186,18 @@
 (defun nphtml--insert-insert-string-when-good nil
   (condition-case err
       (if (null nphtml--overlay-committed-string) nil;adds daemon like running
-	(cond (nphtml--overlay-committed-string
-	       (cancel-timer nphtml--insert-timer)
-	       (let* ((spt (point))
-		      (seed (nphtml--analyse-comitted));based on committed-string makeup nphtml-arg
-		      (molec (nphtml--make-molecule seed)))
-		 (insert molec)
-		 (nphtml--insert-revert-vars)
-		 (indent-region spt (point))
-		 (search-backward nphtml--cur spt nil)
-		 (delete-char (length nphtml--cur))))
-	      (t (error "one point i can say is something bad happened...(´・ω・｀)"))))
-    ;if ends here begins finally error handling
+				(cond (nphtml--overlay-committed-string
+							 (cancel-timer nphtml--insert-timer)
+							 (let* ((spt (point))
+											(seed (nphtml--analyse-comitted));based on committed-string makeup nphtml-arg
+											(molec (nphtml--make-molecule seed)))
+								 (insert molec)
+								 (nphtml--insert-revert-vars)
+								 (indent-region spt (point))
+								 (search-backward nphtml--cur spt nil)
+								 (delete-char (length nphtml--cur))))
+							(t (error "one point i can say is something bad happened...(´・ω・｀)"))))
+																				;if ends here begins finally error handling
     (error
      (nphtml--insert-revert-vars)
      (cancel-timer nphtml--insert-timer)
@@ -209,7 +226,7 @@
   ;;this may implies that the redesign of the supervisor is inevitable...(´・ω・｀)
   )
 
-  
+
 ;;(local-set-key (kbd "<") 'nphtml-insert-html)
 
 
@@ -217,4 +234,4 @@
 
 
 (provide 'nphtml)
-                        
+
