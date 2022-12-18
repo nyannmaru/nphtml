@@ -6,7 +6,15 @@
 
 (defconst nphtml--builtin-gblogger-args
 	(let ((archUrls "<$BlogArchiveURL$>") (archNames "<$BlogArchiveName$>")
-				(prevTitle "<$BlogPreviousItemTitle$>") (prevLink "<$BlogItemPermalinkURL$>"))
+				(prevTitle "<$BlogPreviousItemTitle$>") (prevLink "<$BlogItemPermalinkURL$>")
+				(siteFeedLink "<$BlogSiteFeedLink$>") (siteFeedUrl "<$BlogSiteFeedUrl$>")
+				(encoding "<$BlogEncoding$>")
+
+				(ownerPhotoUrl "<$BlogOwnerPhotoUrl$>") (ownerProfileUrl "<$BlogOwnerProfileUrl$>")
+				(ownerLocation "<$BlogOwnerLocation$>") (ownerAboutMe    "<$BlogOwnerAboutMe$>")
+				(ownerFull "<$BlogOwnerFullName$>")
+				(ownerFirst "<$BlogOwnerFirstName$>") (ownerlast "<$BlogOwnerLastName$>")
+				)
 		;;crucially important tags
 		`((:type blocky :tag Blogger  :alias gb-blogger)
 			
@@ -20,6 +28,7 @@
 			(:type blocky :tag ArchivePage :alias gbCond-archivepage)
 			(:type blocky :tag MainOrArchivePage :alias gbCond-mainorarch)
 			(:type blocky :tag BlogItemCommentsEnabled :alias gbCond-cenabled)
+			(:type blocky :tag BlogSiteFeed            :alias gbCond-sfeed)
 
 			;;templates
 			(:type blocky :tag BlogItemTitle :nest (BlogItemUrl) :alias gb-itemtitle)
