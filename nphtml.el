@@ -172,8 +172,8 @@
 (defun nphtml--insert-init-timer nil
   (if (null nphtml--insert-timer)
       (setf nphtml--insert-timer
-						(run-with-timer 1.0 0.45  #'nphtml--insert-insert-string-when-good))
-    (timer-activate nphtml--insert-timer)))
+						(run-with-timer 0.5 0.45  #'nphtml--insert-insert-string-when-good))
+    (timer-activate nphtml--insert-timer)));FIXME(´・ω・｀)should add timer custom
 (defun nphtml--insert-revert-vars nil
   (cancel-timer nphtml--insert-timer)
   (setf nphtml--overlay-committed-string nil
