@@ -1,6 +1,8 @@
 (require 'nphtml-molecule)
 (require 'nphtml-iarg)
 (require 'npring)
+(require 'seq)
+
 ;;;;this package is for using nphtml--make-molecule
 ;;;;this package defines the special overlay and committed string(inside the special overlay you can commit)
 
