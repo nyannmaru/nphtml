@@ -180,30 +180,29 @@
 				nphtml--analyse-main-parts nil
 				nphtml--analyse-sub-parts  nil)
   (remove-hook 'post-command-hook #'nphtml--overlay-observer))
-(defcustom nphtml-insert-should-be-chatty nil
-  "var for testing purpose in most cases should be nil"
-  :type 'boolean)
 (defun nphtml--insert-insert-string-when-good nil
   (condition-case err
       (if (null nphtml--overlay-committed-string) nil;adds daemon like running
 				(cond (nphtml--overlay-committed-string
 							 (cancel-timer nphtml--insert-timer)
+							 (run-hooks 'nphtml-insert-before-hook)
 							 (let* ((spt (point))
 											(seed (nphtml--analyse-comitted));based on committed-string makeup nphtml-arg
 											(molec (nphtml--make-molecule seed)))
 								 (insert molec)
 								 (nphtml--insert-revert-vars)
-								 (indent-region spt (point))
-								 (search-backward nphtml--cur spt nil)
-								 (delete-char (length nphtml--cur))))
+								 (let ((ept (point)))
+									 (search-backward nphtml--cur spt nil)
+									 (delete-char (length nphtml--cur))
+									 (indent-region spt ept)
+									 (run-hooks 'nphtml-insert-after-hook))))
 							(t (error "one point i can say is something bad happened...(´・ω・｀)"))))
 																				;if ends here begins finally error handling
     (error
      (nphtml--insert-revert-vars)
      (cancel-timer nphtml--insert-timer)
      (remove-hook 'post-command-hook #'nphtml--overlay-observer)
-     (when nphtml-insert-should-be-chatty
-       (error "%s" (error-message-string err))))))
+     (error "%s" (error-message-string err)))));;should i change to message?(´・ω・｀)
 ;; (condition-case err
 ;;     (progn (message some) (insert "before-insertion"))
 ;;   (error (message "say yes") (insert "error happened"))
