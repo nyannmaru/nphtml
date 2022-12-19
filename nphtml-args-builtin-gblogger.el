@@ -75,14 +75,12 @@
 			(:type blocky :tag BlogDateFooter          :alias gbCndatefooter)
 			;;means if it is head or tail monthly archive of the blog...perhaps(´・ω・｀)
 			;;^gbIm*  theses are needed to be nested inside <blogger> tags
-			(:alias gbImtitle-internal :type inline :tag BlogItemTitle :hidden t
+			(:alias gbImtitle :type inline :tag BlogItemTitle  :forcing t
 							:nest ((:tag ,(string-trim itemTitle "<" ">") :type void)))
-			(:alias gbImtitle :tag gbImtitle-internal)
 			(:alias gbImdate :type void :tag ,(string-trim itemDate "<" ">"))
-			(:alias gbImlink-internal :type inline :tag BlogItemURL
+			(:alias gbImlink :type inline :tag BlogItemURL     :forcing t
 							:nest ((:tag a :type inline :attrs (href ,itemUrl))))
-			(:alias gbImlink :tag gbImlink-internal)
-			(:type void :alias gbImbody :tag ,(string-trim itemBody "<" ">"))
+			(:alias gbImbody :type void  :tag ,(string-trim itemBody "<" ">"))
 
 
 			

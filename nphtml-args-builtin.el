@@ -4,7 +4,7 @@
 (defcustom nphtml-lang-attr "en"
 	"lang attribute for html tag")
 (defconst nphtml--builtin-html-args
-  '((:alias dateComment :para (concat "FirstEdit: " (current-time-string)) :type comment)
+  `((:alias dateComment :para (concat "FirstEdit: " (current-time-string)) :type comment)
     (:alias comment     :para ""                                           :type comment)
     (:tag a  :type inline :attrs (href ""))
 		(:tag p  :type inline)
