@@ -19,6 +19,8 @@
 ;;;;;
 ;;;;;| :repeat   The integer more than or equal to 1 number of repeats of self
 
+;;;;;| :forcing    The boolean variable if this is non-nil always uses its nesting tags
+;;;;;            (this may infuse infinite recusive calls though)
 
 (require 'cl-lib)
 (defconst nphtml--args-type-kinds
@@ -31,7 +33,7 @@
 ;; (nphtml--args-stringise "something" t)
 
 (defconst nphtml--args-kinds
-  `(:tag :alias :hidden :spec :type :para :attrs :prepend :append :nest :repeat))
+  `(:tag :alias :hidden :spec :type :para :attrs :prepend :append :nest :repeat :forcing))
 (defun nphtml--args-get-kind (kind arg)
   ;; (when (cl-oddp (cl-list-length arg))
   ;;   (error "nphtml-arg must suffice at least being even number length"))
@@ -70,7 +72,9 @@
 				   ((and pgot (not (<= 1 pgot)))
 				    (error "%S's :repeat less than one" arg)))
 	   (or pgot 1))
-	    ;  :repeat end always 0 < integer 
+		  ;  :repeat end always 0 < integer
+		((eq kind :forcing) (if pgot t nil))
+		;;forcing end always returns t or nil
 	  (t (unless (listp pgot) (error "%S doesn't have valid %S" arg kind))
 	     pgot))))
 
