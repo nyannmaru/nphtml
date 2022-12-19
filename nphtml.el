@@ -1,6 +1,9 @@
 (require 'nphtml-molecule)
 (require 'nphtml-iarg)
 (require 'npring)
+(require 'nphtml-args)
+(require 'nphtml-args-builtin-gblogger)
+(require 'nphtml-args-builtin)
 (require 'seq)
 
 ;;;;this package is for using nphtml--make-molecule
