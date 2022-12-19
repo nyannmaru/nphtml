@@ -4,42 +4,109 @@
   "decide whether add to gblogger or not when init"
   :type 'boolean)
 
-(defconst nphtml--builtin-gblogger-args
-	(let ((archUrls "<$BlogArchiveURL$>") (archNames "<$BlogArchiveName$>")
-				(prevTitle "<$BlogPreviousItemTitle$>") (prevLink "<$BlogItemPermalinkURL$>")
-				(siteFeedLink "<$BlogSiteFeedLink$>") (siteFeedUrl "<$BlogSiteFeedUrl$>")
-				(encoding "<$BlogEncoding$>")
+;;^gbBg* is blog specific templates such as like a blog owner, discription or title etc
+;;^gbIm* is blog item(=the page you've written as a content of the blog)
+;;       such as like a editDate or title etc
+;;^gbCn* is blogger special conditional blocky tags
+;;       if a certain codition is sufficed then its internal body would be 
+;;       shows up as a part of html document when blog is loaded on the browser.
+;;       for example if you write <MainPage><p>paragraph!!</p></MainPaga> paragraph!! would be written only
+;;       in main page(=root page of your blog)
+;;^gbAv* is for archive specific tags
+;;^gbCt* is for comment specifiec tags
+;;^gbAr* is for blog item author specific tags
 
+
+(defconst nphtml--builtin-gblogger-args
+	(let ((blogUrl  "<$BlogURL$>") (blogTitle "<$BlogTitle$>")
+				(blogDesc "<$BlogDescription$>")
+				(archUrls "<$BlogArchiveURL$>") (archNames "<$BlogArchiveName$>");maybe doesn't work well(´・ω・｀)
+				(prevTitle "<$BlogPreviousItemTitle$>")
+				(siteFeedLink "<$BlogSiteFeedLink$>") (siteFeedUrl "<$BlogSiteFeedUrl$>")
+				;;one of them is exported as an inteface but what's the hell the differece of them?(´・ω・｀)
+				(encoding "<$BlogEncoding$>")
+				(pageTitle "<$BlogPageTitle$>")
+				
+
+				;;owner relative strings
 				(ownerPhotoUrl "<$BlogOwnerPhotoUrl$>") (ownerProfileUrl "<$BlogOwnerProfileUrl$>")
 				(ownerLocation "<$BlogOwnerLocation$>") (ownerAboutMe    "<$BlogOwnerAboutMe$>")
+				(ownerEmail "<$BlogOwnerEmail$>")
 				(ownerFull "<$BlogOwnerFullName$>")
 				(ownerFirst "<$BlogOwnerFirstName$>") (ownerlast "<$BlogOwnerLastName$>")
+				(ownerNickname "<$BlogOwnerNickname$>")
+				;;item relative strings
+				(itemBody  "<$BlogItemBody$>") (itemUrl "<$BlogItemPermalinkURL$>")
+				(itemDate  "<$BlogItemDateTime$>") (itemNumber "<$BlogItemNumber$>");these works well(´・ω・｀)
+				(itemTitle "<$BlogItemTitle$>")
+				(itemArchFile "<$BlogItemArchiveFileName$>")
+				(itemAuthor "<$BlogItemAuthor$>")
+				(itemAuthorUrl "<$BlogItemAuthorURL$>")
+				(itemAuthorNickname "<$BlogItemAuthorNickname$>")
+				(itemAuthorEmail "<$BlogItemAuthorEmail$>")
+				(itemControl     "<$BlogItemControl$>")
+
+				;;comment relative strings
+				(comntNum   "<$BlogCommentNumber$>") (comntBody "<$BlogCommentBody$>")
+				(comntEachLink "<$BlogCommentPermalinkURL$>")
+				(comntId   "<$BlogCommentAnchorName$>");used as #id maybe unique number generator?(´・ω・｀)
+				(comntAuthor "<$BlogCommentAuthor$>") (comntDate "<$BlogCommentDateTime$>")
+				(comntDelUrl "<$BlogCommentDeleteIcon$>")
+				(comntCreUrl "<$BlogItemCommentCreate$>")
 				)
 		;;crucially important tags
-		`((:type blocky :tag Blogger  :alias gb-blogger)
+		`((:alias gbBlogtitle :type inline :tag a :attrs (href ,blogUrl) :para ,blogTitle)
+			(:alias gbBlogger :type blocky :tag Blogger)
 			
-			(:type blocky :tag BloggerArchives :alias gb-archives
+			(:type inline :tag BloggerArchives :alias gbArchive-internal :hidden t
 						 :nest ((:tag li :type inline
-										:nest ((:tag a :attrs (href ,archUrls) :para ,archNames :type inline)))))
+													:nest ((:tag a :attrs (href ,itemUrl) :para ,itemTitle :type inline)))))
+			(:type blocky :tag Blogger :alias gbAv
+						 :nest (gbArchive-internal))
+			(:type blocky :tag BloggerPreviousItems :alias gbPrevs-internal :hidden t
+						 :nest ((:tag li :type inline
+													:nest ((:tag a :attrs (href ,itemUrl) :para ,prevTitle :type inline)))))
+			(:type blocky :tag Blogger :alias gbPrevs
+						 :nest (gbPrevs-internal))
+			(:type blocky :tag BlogItemTitle :alias gbItemtitle
+						 :nest ((:tag BlogItemUrl :type blocky
+													:nest ((:tag a :attrs (href ,itemUrl) :type inline
+																			 :nest ((:tag h3 :type inline :para ,itemTitle)))))))
+			(:type inline :tag h3 :para ,itemDate :alias gbItemdate)
+			(:type inline :tag Blogger :alias gbItembody
+						 :nest ((:type void   :tag ,(string-trim itemBody "<" ">"))))
+			
+			
+			
 
 			;;condition case like tags
-			(:type blocky :tag ItemPage :alias gbCond-itempage)
-			(:type blocky :tag MainPage :alias gbCond-mainpage)
-			(:type blocky :tag ArchivePage :alias gbCond-archivepage)
-			(:type blocky :tag MainOrArchivePage :alias gbCond-mainorarch)
-			(:type blocky :tag BlogItemCommentsEnabled :alias gbCond-cenabled)
-			(:type blocky :tag BlogSiteFeed            :alias gbCond-sfeed)
+			(:type blocky :tag ItemPage                :alias gbCnitempage)
+			(:type blocky :tag MainPage                :alias gbCnmainpage)
+			(:type blocky :tag ArchivePage             :alias gbCnarchivepage)
+			(:type blocky :tag MainOrArchivePage       :alias gbCnmainorarch)
+			(:type blocky :tag BlogItemCommentsEnabled :alias gbCncommentenabled)
+			(:type blocky :tag BlogSiteFeed            :alias gbCnsitefeed)
 
-			;;templates
-			(:type blocky :tag BlogItemTitle :nest (BlogItemUrl) :alias gb-itemtitle)
-			(:type inline :tag BlogItemUrl   :nest ((:tag a :type inline :attrs (href <$BlogItemUrl$>))) :hidden t)
-			(:type blocky :tag BloggerPreviousItems :alias gbPrevs
-						 :nest ((:tag li :type inline
-									:nest ((:tag a :attrs (href ,prevLink) :para ,prevTitle :type inline)))))
-			(:type inline :tag title :alias gbBlogPageTitle :para <$BlogPageTitle$> :hidden t)
+			(:type blocky :tag BlogItemURL             :alias gbCnhasurl)
+			(:type blocky :tag BlogItemTitle           :alias gbCnhastitle);i cant understand these guys(´・ω・｀)
+
+			(:type blocky :tag BlogDateHeader          :alias gbCndateheader)
+			(:type blocky :tag BlogDateFooter          :alias gbCndatefooter)
+			;;means if it is head or tail monthly archive of the blog...perhaps(´・ω・｀)
+
+			(:type blocky :tag BlogItemUrl   :nest ((:tag a :type inline :attrs (href <$BlogItemUrl$>))) :hidden t)
 			(:type void   :tag $BlogMetaData$                           :hidden t)
-			
-			(:type blocky :tag h1 ))))
+			(:type blocky :tag html :attrs (lang ,nphtml-lang-attr) :alias gbhtml
+						 :prepend (!DOCTYPE dateComment)
+						 :nest (gbhead gbbody))
+			(:type blocky :tag head :alias gbhead :hidden t
+						 :nest ((:tag title :type inline :para ,pageTitle)
+										(:tag $BlogMetaData$ :type void)
+										(:tag script :type inline) (:tag style)))
+			(:type blocky :tag body :alias gbbody :hidden t
+						 :nest (header gbmain footer))
+			(:type blocky :tag main :alias gbmain :hidden t
+						 :nest (gbCnmainpage gbCnarchivepage gbCnitempage)))))
 
 
 (provide 'nphtml-args-builtin-gblogger)

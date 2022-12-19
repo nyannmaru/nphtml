@@ -1,12 +1,13 @@
-(require 'nphtml-args)
-(require 'nphtml-args-builtin-gblogger)
+
 (defgroup nphtml nil
   "convension for writing html or svg")
-
+(defcustom nphtml-lang-attr "en"
+	"lang attribute for html tag")
 (defconst nphtml--builtin-html-args
   '((:alias dateComment :para (concat "FirstEdit: " (current-time-string)) :type comment)
     (:alias comment     :para ""                                           :type comment)
     (:tag a  :type inline :attrs (href ""))
+		(:tag p  :type inline)
     (:tag h1 :type inline)
     (:tag h2 :type inline)
     (:tag h3 :type inline)
@@ -14,7 +15,7 @@
     (:tag h5 :type inline)
     (:tag h6 :type inline)
     (:tag !DOCTYPE :hidden t :type void :spec html)
-    (:tag html :type blocky :attrs (lang en)
+    (:tag html :type blocky :attrs (lang ,nphtml-lang-attr)
 	  :prepend (dateComment !DOCTYPE)
 	  :nest (head body))
     (:tag body :type blocky :nest (header main footer) :hidden t)
@@ -38,6 +39,8 @@
     (:tag meter)
     (:tag nav  :type blocky)
 		(:tag ol   :type blocky)
+		(:tag ul   :type blocky)
+		(:tag img  :type void :attrs (src "" alt ""))
     (:tag nobr)
     (:tag noframes)
     (:tag noscript)
