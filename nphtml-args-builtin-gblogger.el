@@ -55,31 +55,12 @@
 				(comntCreUrl "<$BlogItemCommentCreate$>")
 				)
 		;;crucially important tags
-		`((:alias gbBlogtitle :type inline :tag a :attrs (href ,blogUrl) :para ,blogTitle)
-			(:alias gbBlogger :type blocky :tag Blogger)
-			
-			(:type inline :tag BloggerArchives :alias gbArchive-internal :hidden t
-						 :nest ((:tag li :type inline
-													:nest ((:tag a :attrs (href ,itemUrl) :para ,itemTitle :type inline)))))
-			(:type blocky :tag Blogger :alias gbAv
-						 :nest (gbArchive-internal))
-			(:type blocky :tag BloggerPreviousItems :alias gbPrevs-internal :hidden t
-						 :nest ((:tag li :type inline
-													:nest ((:tag a :attrs (href ,itemUrl) :para ,prevTitle :type inline)))))
-			(:type blocky :tag Blogger :alias gbPrevs
-						 :nest (gbPrevs-internal))
-			(:type blocky :tag BlogItemTitle :alias gbItemtitle
-						 :nest ((:tag BlogItemUrl :type blocky
-													:nest ((:tag a :attrs (href ,itemUrl) :type inline
-																			 :nest ((:tag h3 :type inline :para ,itemTitle)))))))
-			(:type inline :tag h3 :para ,itemDate :alias gbItemdate)
-			(:type inline :tag Blogger :alias gbItembody
-						 :nest ((:type void   :tag ,(string-trim itemBody "<" ">"))))
-			
-			
-			
-
-			;;condition case like tags
+		`((:alias gbBlogger :type blocky :tag Blogger)
+			;;^gbBg*
+			(:alias gbBgtitle :type void :tag ,(string-trim blogTitle "<" ">"))
+			(:alias gbBgdisc  :type void :tag ,(string-trim blogDesc  "<" ">"))
+			(:alias gbBgfeedlink :type void :tag ,(string-trim siteFeedLink "<" ">"))
+			;;^gbCn*
 			(:type blocky :tag ItemPage                :alias gbCnitempage)
 			(:type blocky :tag MainPage                :alias gbCnmainpage)
 			(:type blocky :tag ArchivePage             :alias gbCnarchivepage)
@@ -93,8 +74,32 @@
 			(:type blocky :tag BlogDateHeader          :alias gbCndateheader)
 			(:type blocky :tag BlogDateFooter          :alias gbCndatefooter)
 			;;means if it is head or tail monthly archive of the blog...perhaps(´・ω・｀)
+			;;^gbIm*  theses are needed to be nested inside <blogger> tags
+			(:alias gbImtitle-internal :type inline :tag BlogItemTitle :hidden t
+							:nest ((:tag ,(string-trim itemTitle "<" ">") :type void)))
+			(:alias gbImtitle :tag gbImtitle-internal)
+			(:alias gbImdate :type void :tag ,(string-trim itemDate "<" ">"))
+			(:alias gbImlink-internal :type inline :tag BlogItemURL
+							:nest ((:tag a :type inline :attrs (href ,itemUrl))))
+			(:alias gbImlink :tag gbImlink-internal)
+			(:type void :alias gbImbody :tag ,(string-trim itemBody "<" ">"))
 
-			(:type blocky :tag BlogItemUrl   :nest ((:tag a :type inline :attrs (href <$BlogItemUrl$>))) :hidden t)
+
+			
+			(:type blocky :tag BloggerArchives :alias gbArchive-internal :hidden t
+						 :nest ((:tag li :type inline
+													:nest ((:tag a :attrs (href ,itemUrl) :para ,itemTitle :type inline)))))
+			(:type blocky :tag Blogger :alias gbAv
+						 :nest (gbArchive-internal))
+			(:type blocky :tag BloggerPreviousItems :alias gbPrevs-internal :hidden t
+						 :nest ((:tag li :type inline
+													:nest ((:tag a :attrs (href ,itemUrl) :para ,prevTitle :type inline)))))
+			(:type blocky :tag Blogger :alias gbPrevs
+						 :nest (gbPrevs-internal))
+			
+			
+
+			
 			(:type void   :tag $BlogMetaData$                           :hidden t)
 			(:type blocky :tag html :attrs (lang ,nphtml-lang-attr) :alias gbhtml
 						 :prepend (!DOCTYPE dateComment)
