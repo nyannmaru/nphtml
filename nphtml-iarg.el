@@ -128,10 +128,7 @@
 	      (seq-every-p #'null nphtml--analyse-sub-parts))
 	 (if (eq (length nphtml--analyse-main-parts) 1)
 	     (nphtml--replace-string-with-arg (car nphtml--analyse-main-parts))
-	   (let ((args (seq-map (lambda (x) (let  ((args (nphtml--replace-string-with-arg x)))
-																				(if (nphtml--args-get-kind :forcing args)
-																						args
-																					(nphtml--replace-string-with-arg x t))))
+	   (let ((args (seq-map (lambda (x) (nphtml--replace-string-with-arg x t))
 													nphtml--analyse-main-parts)))
 	     (nphtml--nplist-nest-piramid args))))
 	((and nphtml--analyse-main-parts nphtml--analyse-sub-parts)

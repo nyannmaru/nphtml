@@ -120,10 +120,12 @@
 
 (defun nphtml--get-hash-weakly (alias)
   (let ((gotten (nphtml--get-hash alias)))
-    (plist-put gotten :prepend nil)
-    (plist-put gotten :nest nil)
-    (plist-put gotten :append nil)
-    gotten))
-;; (nphtml--get-hash 'html)
+		(if (eq t (plist-get gotten :forcing))
+				gotten
+			(plist-put gotten :prepend nil)
+			(plist-put gotten :nest nil)
+			(plist-put gotten :append nil)
+			gotten)))
+;;(nphtml--make-molecule (nphtml--replace-string-with-arg 'gbImtitle t))
 
 (provide 'nphtml-args-builtin)
