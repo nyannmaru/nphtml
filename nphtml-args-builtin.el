@@ -128,7 +128,7 @@
 
 		(:tag pre :type blocky)
 		(:tag br  :type void)
-		(:tag wbr :type void) ;what's this?(´・ω・｀)
+		(:tag wbr :type inline) ;what's this?(´・ω・｀)
 		(:tag hr  :type void)
 
 
