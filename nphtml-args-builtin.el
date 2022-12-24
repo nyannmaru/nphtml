@@ -18,9 +18,12 @@
     (:tag html :type blocky :attrs (lang ,nphtml-lang-attr)
 	  :prepend (dateComment !DOCTYPE)
 	  :nest (head body))
+		(:tag head :type blocky :nest (title chmeta vpmeta script style) :hidden t)
     (:tag body :type blocky :nest (header main footer) :hidden t)
-    (:tag head :type blocky :nest (title chmeta) :hidden t)
+
     (:tag meta :alias chmeta :type void :attrs (charset utf-8) :hidden t)
+		(:tag meta :alias vpmeta :type void
+					:attrs (name "viewport" content "width=device-width, initial-scale=1"))
     (:tag meta :type void :attrs (name "" content ""))
     (:tag title :type inline :hidden t)
 
@@ -37,6 +40,10 @@
 		(:tag ul   :type blocky)
 		(:tag li   :type inline)
 
+		(:tag dl   :type blocky
+					:nest (dt dd))
+		(:tag dt   :type inline) (:tag dd :type inline)
+		
 		(:tag img    :type void :attrs (src "" alt ""))
 		(:tag audio  :type blocky)
 		(:tag canvas :type blocky)
