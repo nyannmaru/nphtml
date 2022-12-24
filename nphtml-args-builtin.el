@@ -6,8 +6,8 @@
 (defconst nphtml--builtin-html-args
   `((:alias dateComment :para (concat "FirstEdit: " (current-time-string)) :type comment)
     (:alias comment     :para ""                                           :type comment)
-    (:tag a  :type inline :attrs (href ""))
-		(:tag p  :type inline)
+
+		(:tag p  :type blocky)
     (:tag h1 :type inline)
     (:tag h2 :type inline)
     (:tag h3 :type inline)
@@ -21,26 +21,58 @@
     (:tag body :type blocky :nest (header main footer) :hidden t)
     (:tag head :type blocky :nest (title chmeta) :hidden t)
     (:tag meta :alias chmeta :type void :attrs (charset utf-8) :hidden t)
-    (:tag meta :type void)
-    (:tag title :type inline)
-    (:tag i)
-    (:tag ins)
-    (:tag isindex)
-    (:tag kbd)
-    (:tag label)
-    (:tag lang)
-    (:tag legend)
-    (:tag li :type inline)
-    (:tag main :type blocky)
-    (:tag map)
+    (:tag meta :type void :attrs (name "" content ""))
+    (:tag title :type inline :hidden t)
+
+		(:tag section :type blocky)
+		(:tag div     :type blocky)
+		(:tag header  :type blocky)
+    (:tag main    :type blocky)
+		(:tag footer  :type blocky)
+		(:tag article :type blocky)
+		(:tag aside   :type blocky)
+
+		(:tag nav  :type blocky)
+		(:tag ol   :type blocky)
+		(:tag ul   :type blocky)
+		(:tag li   :type inline)
+
+		(:tag img    :type void :attrs (src "" alt ""))
+		(:tag audio  :type blocky)
+		(:tag canvas :type blocky)
+		(:tag video  :type blocky)
+
+		(:tag a  :type inline :attrs (href ""))
+		(:tag button :type inline)
+		(:tag input :type inline)
+		(:tag select :type inline)
+		(:tag textarea :type inline)
+
+		(:tag ins :type inline)
+		(:tag del :type inline)
+
+		(:tag q          :type inline)
+		(:tag cite       :type inline)
+		(:tag blockquote :type blocky :attrs (cite ""))
+
+		(:tag dfn        :type inline)
+		(:tag abbr       :type inline :attrs (title ""))
+		(:tag time       :type inline :attrs (datetime ""))
+
+		
+
+
+		(:alias code :tag pre :type inline :nest ((:tag code :type blocky)))
+		(:tag samp :type inline)
+		(:tag kbd  :type inline)
+		(:tag var  :type inline)
+		(:tag map)
     (:tag mark)
     (:tag math)
     
     (:tag meter)
-    (:tag nav  :type blocky)
-		(:tag ol   :type blocky)
-		(:tag ul   :type blocky)
-		(:tag img  :type void :attrs (src "" alt ""))
+    
+		
     (:tag nobr)
     (:tag noframes)
     (:tag noscript)
@@ -51,9 +83,9 @@
     (:tag over)
     (:tag param)
     (:tag person)
-    (:tag pre)
+
     (:tag progress)
-    (:tag q)
+
     (:tag rev)
     (:tag rp)
     (:tag rt)
@@ -61,25 +93,47 @@
     (:tag s)
     (:tag samp)
     (:tag script)
-    (:tag section :type blocky)
-		(:tag div :type blocky)
-    (:tag small)
+
+		(:tag figure :type blocky :nest ((:tag figcaption :type inline) img))
+		
     (:tag source)
-    (:tag span :type inline)
-    (:tag strong :type inline)
+
+
     (:tag style)
-    (:tag sub :type inline)
-    (:tag summary)
-    (:tag sup :type inline)
-    (:tag time)
-    
-    (:tag tr)
+		
+		(:tag picture :type blocky :nest (sorce img))
+		(:tag source  :type inline :attrs (media "" srcset ""))
+
+    (:tag span   :type inline) 
+    (:tag sub    :type inline)
+    (:tag sup    :type inline)
+		(:tag s      :type inline)
+		(:tag mark   :type inline)
+		(:tag small  :type inline)
+		(:tag strong :type inline)
+
+
+
     (:tag track)
     (:tag tt)
     (:tag u)
     (:tag var)
-    (:tag video)
-    (:tag wbr :type void)
+
+		(:tag pre :type blocky)
+		(:tag br  :type void)
+		(:tag wbr :type void) ;what's this?(´・ω・｀)
+		(:tag hr  :type void)
+
+
+		(:tag table :type blocky
+					:nest ((:tag caption :type inline)
+								 (:tag thead :type blocky :nest
+											 ((:type comment :para "<tr><th>header1</th> <th colspan=\"m\">header2</th> ...</tr>")))
+								 (:tag tbody :type blocky :nest
+											 ((:type comment :para "<tr><td>data1</td> <td rowspan=\"m\">data2</td> ...</tr>")))))
+		(:tag th :type inline)
+		(:tag tr :type inline)
+		(:tag details :type blocky :nest ((:tag summary :type inline)))
     ))
 
 
