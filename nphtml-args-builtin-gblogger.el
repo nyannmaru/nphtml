@@ -106,7 +106,7 @@
 						 :nest ((:tag title :type inline :para ,pageTitle)
 										favlink chmeta vpmeta 
 										(:tag $BlogMetaData$ :type void);should be commented(´・ω・｀))
-										script style)
+										script style))
 			(:type blocky :tag body :alias gbbody :hidden t
 						 :nest (header gbmain footer))
 			(:type blocky :tag main :alias gbmain :hidden t
