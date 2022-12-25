@@ -104,8 +104,9 @@
 						 :nest (gbhead gbbody))
 			(:type blocky :tag head :alias gbhead :hidden t
 						 :nest ((:tag title :type inline :para ,pageTitle)
-										(:tag $BlogMetaData$ :type void);should be commented(´・ω・｀)
-										vpmeta script style));may need chmeta
+										favlink chmeta vpmeta 
+										(:tag $BlogMetaData$ :type void);should be commented(´・ω・｀))
+										script style)
 			(:type blocky :tag body :alias gbbody :hidden t
 						 :nest (header gbmain footer))
 			(:type blocky :tag main :alias gbmain :hidden t

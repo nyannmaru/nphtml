@@ -18,9 +18,10 @@
     (:tag html :type blocky :attrs (lang ,nphtml-lang-attr)
 	  :prepend (dateComment !DOCTYPE)
 	  :nest (head body))
-		(:tag head :type blocky :nest (title chmeta vpmeta script style) :hidden t)
+		(:tag head :type blocky :nest (title favlink chmeta vpmeta script style) :hidden t)
     (:tag body :type blocky :nest (header main footer) :hidden t)
 
+		(:tag link :alias favlink :type void :attrs (rel icon type "" sizes "" href ""))
     (:tag meta :alias chmeta :type void :attrs (charset utf-8) :hidden t)
 		(:tag meta :alias vpmeta :type void
 					:attrs (name "viewport" content "width=device-width, initial-scale=1"))
